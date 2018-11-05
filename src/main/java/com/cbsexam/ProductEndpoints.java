@@ -1,5 +1,6 @@
 package com.cbsexam;
 
+import cache.ProductCache;
 import com.google.gson.Gson;
 import controllers.ProductController;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import utils.Encryption;
 @Path("product")
 public class ProductEndpoints {
 
+  
   /**
    * @param idProduct
    * @return Responses
@@ -24,14 +26,13 @@ public class ProductEndpoints {
   @Path("/{idProduct}")
   public Response getProduct(@PathParam("idProduct") int idProduct) {
 
-    // Call our controller-layer in order to get the order from the DB
-    Product product = ProductController.getProduct(idProduct);
+    // Bruger Chaching metoden fra ProductCache klassen og sætter den til false så den kun cacher når det er nødvendigt
+    ArrayList<Product> product = productCache.getProducts(false);
 
     // TODO: Add Encryption to JSON - FIXED
     // We convert the java object to json with GSON library imported in Maven
     String json = new Gson().toJson(product);
     json = Encryption.encryptDecryptXOR(json);
-
 
     // Return a response with status 200 and JSON as type
     return Response.status(200).type(MediaType.TEXT_PLAIN_TYPE).entity(json).build();
@@ -76,4 +77,8 @@ public class ProductEndpoints {
       return Response.status(400).entity("Could not create user").build();
     }
   }
+
+  //Jeg opretter her et objekt af klassen ProductCache, så klassen kan kaldes. Så getProducts nu bliver brugt.
+  ProductCache productCache = new ProductCache();
+
 }

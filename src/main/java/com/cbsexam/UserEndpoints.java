@@ -1,5 +1,7 @@
 package com.cbsexam;
 
+import cache.OrderCache;
+import cache.UserCache;
 import com.google.gson.Gson;
 import controllers.UserController;
 import java.util.ArrayList;
@@ -10,6 +12,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import model.Order;
 import model.User;
 import utils.Encryption;
 import utils.Log;
@@ -25,8 +29,8 @@ public class UserEndpoints {
   @Path("/{idUser}")
   public Response getUser(@PathParam("idUser") int idUser) {
 
-    // Use the ID to get the user from the controller.
-    User user = UserController.getUser(idUser);
+    // Bruger Chaching metoden fra UserCache klassen og sætter den til false så den kun cacher når det er nødvendigt
+    ArrayList<User> user = userCache.getUsers(false);
 
     // TODO: Add Encryption to JSON - FIXED
     // Convert the user object to json in order to return the object
@@ -57,6 +61,7 @@ public class UserEndpoints {
     // Return the users with the status code 200
     return Response.status(200).type(MediaType.APPLICATION_JSON).entity(json).build();
   }
+
 
   @POST
   @Path("/")
@@ -104,4 +109,8 @@ public class UserEndpoints {
     // Return a response with status 200 and JSON as type
     return Response.status(400).entity("Endpoint not implemented yet").build();
   }
+
+  //Jeg opretter her et objekt af klassen UserCache, så klassen kan kaldes. Så getUsers nu bliver brugt.
+  UserCache userCache = new UserCache();
+
 }

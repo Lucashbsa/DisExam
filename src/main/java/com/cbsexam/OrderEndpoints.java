@@ -1,5 +1,6 @@
 package com.cbsexam;
 
+import cache.OrderCache;
 import com.google.gson.Gson;
 import controllers.OrderController;
 import java.util.ArrayList;
@@ -24,8 +25,8 @@ public class OrderEndpoints {
   @Path("/{idOrder}")
   public Response getOrder(@PathParam("idOrder") int idOrder) {
 
-    // Call our controller-layer in order to get the order from the DB
-    Order order = OrderController.getOrder(idOrder);
+    // Bruger Chaching metoden fra UserCache klassen og sætter den til false så den kun cacher når det er nødvendigt
+    ArrayList<Order> order = orderCache.getOrders(false);
 
     // TODO: Add Encryption to JSON - FIXED
     // We convert the java object to json with GSON library imported in Maven
@@ -77,4 +78,6 @@ public class OrderEndpoints {
       return Response.status(400).entity("Could not create user").build();
     }
   }
+  //Jeg opretter her et objekt af klassen UsersCache, så klassen kan kaldes. Så getUsers nu bliver brugt.
+  OrderCache orderCache = new OrderCache();
 }
