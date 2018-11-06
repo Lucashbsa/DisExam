@@ -1,9 +1,9 @@
 package cache;
 
 import controllers.OrderController;
-import java.util.ArrayList;
 import model.Order;
 import utils.Config;
+import java.util.ArrayList;
 
 //TODO: Build this cache and use it. - FIXED
 public class OrderCache {
@@ -27,6 +27,7 @@ public class OrderCache {
         // Otherwise we look at the age of the cache and figure out if we should update.
         // If the list is empty we also check for new Orders
         if (forceUpdate
+                // Hvis Created og TTL tilsammen er større en CurrentTime vil Cachen Opdatere
                 || ((this.created + this.ttl) >= (System.currentTimeMillis() / 1000L))
                 || this.orders.isEmpty()) {
 
@@ -38,8 +39,10 @@ public class OrderCache {
             this.created = System.currentTimeMillis() / 1000L;
         }
 
+        //Hvis den her linje bliver udskrevet er Cachen blvet opdateret
+        System.out.println("Cash is Updated");
+
         // Return the documents
         return this.orders;
     }
-
 }
