@@ -22,13 +22,13 @@ public class OrderEndpoints {
     @Path("/{idOrder}")
     public Response getOrder(@PathParam("idOrder") int idOrder) {
 
-        // Bruger Chaching metoden fra UserCache klassen og sætter den til false så den kun cacher når det er nødvendigt
-        ArrayList<Order> order = orderCache.getOrders(false);
+        // Call our controller-layer in order to get the order from the DB
+        Order order = OrderController.getOrder(idOrder);
 
         // TODO: Add Encryption to JSON - FIXED
         // We convert the java object to json with GSON library imported in Maven
         String json = new Gson().toJson(order);
-        json = Encryption.encryptDecryptXOR(json);
+        //json = Encryption.encryptDecryptXOR(json);
 
         // Return a response with status 200 and JSON as type
         return Response.status(200).type(MediaType.APPLICATION_JSON).entity(json).build();
@@ -41,13 +41,13 @@ public class OrderEndpoints {
     @Path("/")
     public Response getOrders() {
 
-        // Call our controller-layer in order to get the order from the DB
-        ArrayList<Order> orders = OrderController.getOrders();
+        // Bruger Chaching metoden fra UserCache klassen og sætter den til false så den kun cacher når det er nødvendigt
+        ArrayList<Order> orders = orderCache.getOrders(false);
 
         // TODO: Add Encryption to JSON - FIXED
         // We convert the java object to json with GSON library imported in Maven
         String json = new Gson().toJson(orders);
-        json = Encryption.encryptDecryptXOR(json);
+        //json = Encryption.encryptDecryptXOR(json);
 
         // Return a response with status 200 and JSON as type
         return Response.status(200).type(MediaType.TEXT_PLAIN_TYPE).entity(json).build();
@@ -79,5 +79,5 @@ public class OrderEndpoints {
     }
 
     //Jeg opretter her et objekt af klassen OrderCache, så klassen kan kaldes. Så getUsers nu bliver brugt.
-    OrderCache orderCache = new OrderCache();
+    static OrderCache orderCache = new OrderCache();
 }

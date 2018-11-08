@@ -23,13 +23,13 @@ public class ProductEndpoints {
     @Path("/{idProduct}")
     public Response getProduct(@PathParam("idProduct") int idProduct) {
 
-        // Bruger Chaching metoden fra ProductCache klassen og sætter den til false så den kun cacher når det er nødvendigt
-        ArrayList<Product> product = productCache.getProducts(false);
+        // Call our controller-layer in order to get the order from the DB
+        Product product = ProductController.getProduct(idProduct);
 
         // TODO: Add Encryption to JSON - FIXED
         // We convert the java object to json with GSON library imported in Maven
         String json = new Gson().toJson(product);
-        json = Encryption.encryptDecryptXOR(json);
+        //json = Encryption.encryptDecryptXOR(json);
 
         // Return a response with status 200 and JSON as type
         return Response.status(200).type(MediaType.TEXT_PLAIN_TYPE).entity(json).build();
@@ -42,13 +42,13 @@ public class ProductEndpoints {
     @Path("/")
     public Response getProducts() {
 
-        // Call our controller-layer in order to get the order from the DB
-        ArrayList<Product> products = ProductController.getProducts();
+        // Bruger Chaching metoden fra ProductCache klassen og sætter den til false så den kun cacher når det er nødvendigt
+        ArrayList<Product> products = productCache.getProducts(false);
 
         // TODO: Add Encryption to JSON - FIXED
         // We convert the java object to json with GSON library imported in Maven
         String json = new Gson().toJson(products);
-        json = Encryption.encryptDecryptXOR(json);
+        //json = Encryption.encryptDecryptXOR(json);
 
         // Return a response with status 200 and JSON as type
         return Response.status(200).type(MediaType.TEXT_PLAIN_TYPE).entity(json).build();
@@ -78,5 +78,5 @@ public class ProductEndpoints {
     }
 
     //Jeg opretter her et objekt af klassen ProductCache, så klassen kan kaldes. Så getProducts nu bliver brugt.
-    ProductCache productCache = new ProductCache();
+    static ProductCache productCache = new ProductCache();
 }

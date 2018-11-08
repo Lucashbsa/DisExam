@@ -28,7 +28,7 @@ public class OrderCache {
         // If the list is empty we also check for new Orders
         if (forceUpdate
                 // Hvis Created og TTL tilsammen er større en CurrentTime vil Cachen Opdatere
-                || ((this.created + this.ttl) >= (System.currentTimeMillis() / 1000L))
+                || ((this.created + this.ttl) <= (System.currentTimeMillis() / 1000L))
                 || this.orders.isEmpty()) {
 
             // Get orders from controller, since we wish to update.
@@ -37,10 +37,10 @@ public class OrderCache {
             // Set orders for the instance and set created timestamp
             this.orders = orders;
             this.created = System.currentTimeMillis() / 1000L;
-        }
 
-        //Hvis den her linje bliver udskrevet er Cachen blvet opdateret
-        System.out.println("Cash is Updated");
+            //Hvis den her linje bliver udskrevet er Cachen blvet opdateret
+            System.out.println("Cash is Updated");
+        }
 
         // Return the documents
         return this.orders;
