@@ -14,6 +14,9 @@ import java.util.ArrayList;
 @Path("order")
 public class OrderEndpoints {
 
+    //Jeg opretter her et objekt af klassen OrderCache, så klassen kan kaldes. Så getUsers nu bliver brugt.
+    static OrderCache orderCache = new OrderCache();
+
     /**
      * @param idOrder
      * @return Responses
@@ -78,6 +81,4 @@ public class OrderEndpoints {
         }
     }
 
-    //Jeg opretter her et objekt af klassen OrderCache, så klassen kan kaldes. Så getUsers nu bliver brugt.
-    static OrderCache orderCache = new OrderCache();
 }

@@ -14,6 +14,8 @@ import java.util.ArrayList;
 @Path("product")
 public class ProductEndpoints {
 
+    //Jeg opretter her et objekt af klassen ProductCache, så klassen kan kaldes. Så getProducts nu bliver brugt.
+    static ProductCache productCache = new ProductCache();
 
     /**
      * @param idProduct
@@ -77,6 +79,4 @@ public class ProductEndpoints {
         }
     }
 
-    //Jeg opretter her et objekt af klassen ProductCache, så klassen kan kaldes. Så getProducts nu bliver brugt.
-    static ProductCache productCache = new ProductCache();
 }

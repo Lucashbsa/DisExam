@@ -27,6 +27,7 @@ public class OrderController {
     // Build SQL string to query
     String sql = "SELECT * FROM orders where id=" + id;
 
+
     // Do the query in the database and create an empty object for the results
     ResultSet rs = dbCon.query(sql);
     Order order = null;
@@ -36,9 +37,11 @@ public class OrderController {
 
         // Perhaps we could optimize things a bit here and get rid of nested queries.
         User user = UserController.getUser(rs.getInt("user_id"));
-        ArrayList<LineItem> lineItems = LineItemController.getLineItemsForOrder(rs.getInt("id"));
         Address billingAddress = AddressController.getAddress(rs.getInt("billing_address_id"));
         Address shippingAddress = AddressController.getAddress(rs.getInt("shipping_address_id"));
+
+        ArrayList<LineItem> lineItems = LineItemController.getLineItemsForOrder(rs.getInt("id"));
+
 
         // Create an object instance of order from the database dataa
         order =

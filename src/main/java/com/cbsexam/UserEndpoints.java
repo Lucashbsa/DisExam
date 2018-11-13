@@ -4,7 +4,6 @@ import cache.UserCache;
 import com.google.gson.Gson;
 import controllers.UserController;
 import model.User;
-import utils.Encryption;
 import utils.Log;
 
 import javax.ws.rs.*;
@@ -14,6 +13,9 @@ import java.util.ArrayList;
 
 @Path("user")
 public class UserEndpoints {
+
+    //Jeg opretter her et objekt af klassen UserCache, så klassen kan kaldes. Så getUsers nu bliver brugt.
+    static UserCache userCache = new UserCache();
 
     /**
      * @param idUser
@@ -32,10 +34,13 @@ public class UserEndpoints {
         //json = Encryption.encryptDecryptXOR(json);
 
         // Return the user with the status code 200
-        // TODO: What should happen if something breaks down? - MAYBY FIXED
-        if(user!=null) {
+        // TODO: What should happen if something breaks down? - FIXED
+        //hvis det skulle slå fejl laver den en HTTP status 400
+        if (user != null) {
+            // Return a response with status 200 and JSON as type
             return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
-        }else {
+        } else {
+            // Return a response with status 400 and JSON as type
             return Response.status(400).type("Could not find the User").build();
         }
     }
@@ -47,11 +52,11 @@ public class UserEndpoints {
     @Path("/")
     public Response getUsers() {
 
-        // Write to log that we are here
+        // Write to log that we are here ------ER IKKE NØDVENDIG ----------------
         Log.writeLog(this.getClass().getName(), this, "Get all users", 0);
 
         // Bruger Chaching metoden fra UserCache klassen og sætter den til false så den kun cacher når det er nødvendigt
-        ArrayList<User> users = userCache.getUsers(false);
+        ArrayList<User> users = userCache.getUsers(false); //SKAL OGSÅ GØRES NÅR JEG OPDATERE
 
 
         // TODO: Add Encryption to JSON - FIXED
@@ -59,8 +64,14 @@ public class UserEndpoints {
         String json = new Gson().toJson(users);
         //json = Encryption.encryptDecryptXOR(json);
 
-        // Return the users with the status code 200
-        return Response.status(200).type(MediaType.APPLICATION_JSON).entity(json).build();
+
+        if (users != null) {
+            // Return a response with status 200 and JSON as type
+            return Response.status(200).type(MediaType.APPLICATION_JSON).entity(json).build();
+        } else {
+            // Return a response with status 400 and JSON as type
+            return Response.status(400).type("Could not find any users").build();
+        }
     }
 
 
@@ -83,6 +94,7 @@ public class UserEndpoints {
             // Return a response with status 200 and JSON as type
             return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
         } else {
+            // Return a response with status 400 and JSON as type
             return Response.status(400).entity("Could not create user").build();
         }
     }
@@ -92,6 +104,7 @@ public class UserEndpoints {
     @Path("/login")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response loginUser(String body) {
+
 
         // Read the json from body and transfer it to a user class
         User user = new Gson().fromJson(body, User.class);
@@ -109,20 +122,45 @@ public class UserEndpoints {
     }
 
 
-    // TODO: Make the system able to delete users
-    public Response deleteUser(String x) {
+    // TODO: Make the system able to delete users. - I GANG
+    @DELETE
+    @Path("/delete")
+    public Response deleteUser(String body) {
+        User user = new Gson().fromJson(body, User.class);
 
-        // Return a response with status 200 and JSON as type
-        return Response.status(400).entity("Endpoint not implemented yet").build();
+
+        // Return the data to the user
+        if (UserController.deleteUser(user.getToken())) {
+
+            // Return a response with status 200 and JSON as type
+            return Response.status(200).entity("Bruger er slettet fra systemet").build();
+        } else {
+            // Return a response with status 200 and JSON as type
+            return Response.status(400).entity("Brugeren kan ikke findes i systemet").build();
+        }
+
     }
+
 
     // TODO: Make the system able to update users
-    public Response updateUser(String x) {
+    @POST
+    @Path("/updateUser")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response updateUser(String body) {
 
-        // Return a response with status 200 and JSON as type
-        return Response.status(400).entity("Endpoint not implemented yet").build();
+        User user = new Gson().fromJson(body, User.class);
+
+        // Return the data to the user
+        if (UserController.updateUser(user, user.getToken())) {
+
+            //Opdatere Cache
+            userCache.getUsers(true);
+
+            // Return a response with status 200 and JSON as type
+            return Response.status(200).entity("Bruger er updateret i systemet").build();
+        } else {
+            // Return a response with status 200 and JSON as type
+            return Response.status(400).entity("Brugeren kan ikke findes i systemet").build();
+        }
     }
-
-    //Jeg opretter her et objekt af klassen UserCache, så klassen kan kaldes. Så getUsers nu bliver brugt.
-    static UserCache userCache = new UserCache();
 }
