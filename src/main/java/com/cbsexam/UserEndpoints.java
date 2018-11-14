@@ -117,12 +117,12 @@ public class UserEndpoints {
             // Return a response with status 200 and JSON as type
             return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(token).build();
         } else {
-            return Response.status(400).entity("Could not create user").build();
+            return Response.status(400).entity("Wrong Email or Password").build();
         }
     }
 
 
-    // TODO: Make the system able to delete users. - I GANG
+    // TODO: Make the system able to delete users. - FIXED
     @DELETE
     @Path("/delete")
     public Response deleteUser(String body) {
@@ -142,7 +142,7 @@ public class UserEndpoints {
     }
 
 
-    // TODO: Make the system able to update users
+    // TODO: Make the system able to update users  - Mangler Hashing af det Nye Password
     @POST
     @Path("/updateUser")
     @Consumes(MediaType.APPLICATION_JSON)

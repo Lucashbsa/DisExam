@@ -239,8 +239,9 @@ public class UserController {
         }
 
         String sql =
-                "UPDATE user SET first_name = '" + user.getFirstname() + "', last_name ='" + user.getLastname() + "', password = '" + user.getPassword()
-                        + "', email ='" + user.getEmail() + "' WHERE id = " + jwt.getClaim("userid").asInt();
+                "UPDATE user SET first_name = '" + user.getFirstname() + "', last_name ='" + user.getLastname()
+                        + "', password = '" + hashing.hashWithSalt(user.getPassword()) + "', email ='" + user.getEmail()
+                        + "' WHERE id = " + jwt.getClaim("userid").asInt();
 
         return dbCon.updateUser(sql);
     }
