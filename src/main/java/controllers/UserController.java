@@ -103,7 +103,7 @@ public class UserController {
 
     public static User createUser(User user) {
 
-        Hashing hashing = new Hashing(); //..
+        Hashing hashing = new Hashing(); 
 
         // Write in log that we've reach this step
         Log.writeLog(UserController.class.getName(), user, "Actually creating a user in DB", 0);
