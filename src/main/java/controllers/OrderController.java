@@ -27,8 +27,18 @@ public class OrderController {
         }
 
         // Build SQL string to query
-        String sql = "SELECT * FROM orders where id=" + id;
-
+        String sql = "select \n" +
+                "\t*,\n" +
+                "\ta.city as billing_city,\n" +
+                "    a1.city as shipping_city\n" +
+                "from orders o \n" +
+                "JOIN address a \n" +
+                "ON o.billing_address_id = a.id \n" +
+                "JOIN user u\n" +
+                "ON o.user_id = u.id\n" +
+                "JOIN address a1\n" +
+                "ON o.shipping_address_id = a1.id\n" +
+                "WHERE o.id =; " + id;
 
         // Do the query in the database and create an empty object for the results
         ResultSet rs = dbCon.query(sql);
@@ -38,11 +48,35 @@ public class OrderController {
             if (rs.next()) {
 
                 // Perhaps we could optimize things a bit here and get rid of nested queries.
-                User user = UserController.getUser(rs.getInt("user_id"));
-                Address billingAddress = AddressController.getAddress(rs.getInt("billing_address_id"));
-                Address shippingAddress = AddressController.getAddress(rs.getInt("shipping_address_id"));
 
                 ArrayList<LineItem> lineItems = LineItemController.getLineItemsForOrder(rs.getInt("id"));
+
+                User user =
+                        new User(
+                                rs.getInt("id"),
+                                rs.getString("first_name"),
+                                rs.getString("last_name"),
+                                rs.getString("password"),
+                                rs.getString("email"));
+
+
+                Address billingAddress =
+                        new Address(
+                                rs.getInt("id"),
+                                rs.getString("name"),
+                                rs.getString("street_address"),
+                                rs.getString("city"),
+                                rs.getString("zipcode")
+                        );
+
+                Address shippingAddress =
+                        new Address(
+                                rs.getInt("id"),
+                                rs.getString("name"),
+                                rs.getString("street_address"),
+                                rs.getString("city"),
+                                rs.getString("zipcode")
+                        );
 
 
                 // Create an object instance of order from the database dataa
@@ -179,6 +213,9 @@ public class OrderController {
                     items.add(item);
                 }
                 order.setLineItems(items);
+
+                comnection.commit();
+                throw new SQLException();
 
         } catch (SQLException e) {
 

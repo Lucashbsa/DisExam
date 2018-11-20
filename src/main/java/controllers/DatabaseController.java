@@ -127,7 +127,8 @@ public class DatabaseController {
             connection = getConnection();
 
         try {
-            PreparedStatement statement = connection.prepareStatement(sql);
+            PreparedStatement statement =
+                    connection.prepareStatement(sql);
             statement.executeUpdate();
             return true;
 
@@ -137,20 +138,6 @@ public class DatabaseController {
         return false;
     }
 
-    public boolean updateUser(String sql) {
 
-        if (connection == null)
-            connection = getConnection();
-
-        try {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.executeUpdate();
-            return true;
-
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-        }
-        return false;
-    }
 
 }

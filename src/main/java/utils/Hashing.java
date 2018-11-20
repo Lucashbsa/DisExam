@@ -8,7 +8,7 @@ import java.security.NoSuchAlgorithmException;
 
 public final class Hashing {
 
-    public String salt = "Xfdby8Kz";
+    private String salt = "Xfdby8Kz";
 
     // TODO: You should add a salt and make this secure - BRUGER SHA I STEDET
     public static String md5(String rawString) {

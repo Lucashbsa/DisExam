@@ -76,7 +76,7 @@ public class UserEndpoints {
 
 
     @POST
-    @Path("/")
+    @Path("/createUser")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createUser(String body) {
 
@@ -142,7 +142,7 @@ public class UserEndpoints {
     }
 
 
-    // TODO: Make the system able to update users  - Mangler Hashing af det Nye Password
+    // TODO: Make the system able to update users  - FIXED
     @POST
     @Path("/updateUser")
     @Consumes(MediaType.APPLICATION_JSON)
