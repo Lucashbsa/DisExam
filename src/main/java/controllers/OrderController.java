@@ -38,7 +38,7 @@ public class OrderController {
                 "ON o.user_id = u.id\n" +
                 "JOIN address a1\n" +
                 "ON o.shipping_address_id = a1.id\n" +
-                "WHERE o.id =; " + id;
+                "WHERE o.id = " + id;
 
         // Do the query in the database and create an empty object for the results
         ResultSet rs = dbCon.query(sql);
@@ -193,89 +193,89 @@ public class OrderController {
 
     public static Order createOrder(Order order) {
 
+        // Check for DB Connection
+        if (dbCon == null) {
+            dbCon = new DatabaseController();
+        }
 
         // Write in log that we've reach this step
         Log.writeLog(OrderController.class.getName(), order, "Actually creating a order in DB", 0);
 
+        // Set creation and updated time for order.
+        order.setCreatedAt(System.currentTimeMillis() / 1000L);
+        order.setUpdatedAt(System.currentTimeMillis() / 1000L);
+
         //Laver en forbindelse til databasen
-        Connection comnection = DatabaseController.getConnection();
+        Connection comnection = dbCon.getConnection();
 
         try {
-                comnection.setAutoCommit(false);
+            //Sætter AutoCommit til false så vi selv kan bestemme hvornår vi commiter
+            comnection.setAutoCommit(false);
 
-                // Set creation and updated time for order.
-                order.setCreatedAt(System.currentTimeMillis() / 1000L);
-                order.setUpdatedAt(System.currentTimeMillis() / 1000L);
+            // Save addresses to database and save them back to initial order instance
+            order.setBillingAddress(AddressController.createAddress(order.getBillingAddress()));
+            order.setShippingAddress(AddressController.createAddress(order.getShippingAddress()));
 
-                // Check for DB Connection
-                if (dbCon == null) {
-                    dbCon = new DatabaseController();
-                }
+            // Save the user to the database and save them back to initial order instance
+            order.setCustomer(UserController.createUser(order.getCustomer()));
 
-                // Save addresses to database and save them back to initial order instance
-                order.setBillingAddress(AddressController.createAddress(order.getBillingAddress()));
-                order.setShippingAddress(AddressController.createAddress(order.getShippingAddress()));
+            // TODO: Enable transactions in order for us to not save the order if somethings fails for some of the other inserts. - FIXED, tror jeg
 
-                // Save the user to the database and save them back to initial order instance
-                order.setCustomer(UserController.createUser(order.getCustomer()));
+            // Insert the product in the DB
+            int orderID = dbCon.insert(
+                    "INSERT INTO orders(user_id, billing_address_id, shipping_address_id, order_total, created_at, updated_at) VALUES("
+                            + order.getCustomer().getId()
+                            + ", "
+                            + order.getBillingAddress().getId()
+                            + ", "
+                            + order.getShippingAddress().getId()
+                            + ", "
+                            + order.calculateOrderTotal()
+                            + ", "
+                            + order.getCreatedAt()
+                            + ", "
+                            + order.getUpdatedAt()
+                            + ")");
 
-                // TODO: Enable transactions in order for us to not save the order if somethings fails for some of the other inserts. - FIXED, tror jeg
+            if (orderID != 0) {
+                //Update the productid of the product before returning
+                order.setId(orderID);
+            }
 
-                // Insert the product in the DB
-                int orderID = dbCon.insert(
-                        "INSERT INTO orders(user_id, billing_address_id, shipping_address_id, order_total, created_at, updated_at) VALUES("
-                                + order.getCustomer().getId()
-                                + ", "
-                                + order.getBillingAddress().getId()
-                                + ", "
-                                + order.getShippingAddress().getId()
-                                + ", "
-                                + order.calculateOrderTotal()
-                                + ", "
-                                + order.getCreatedAt()
-                                + ", "
-                                + order.getUpdatedAt()
-                                + ")");
+            // Create an empty list in order to go trough items and then save them back with ID
+            ArrayList<LineItem> items = new ArrayList<LineItem>();
 
-                if (orderID != 0) {
-                    //Update the productid of the product before returning
-                    order.setId(orderID);
-                }
+            // Save line items to database
+            for (LineItem item : order.getLineItems()) {
+                item = LineItemController.createLineItem(item, order.getId());
+                items.add(item);
+            }
+            order.setLineItems(items);
 
-                // Create an empty list in order to go trough items and then save them back with ID
-                ArrayList<LineItem> items = new ArrayList<LineItem>();
+            comnection.commit();
 
-                // Save line items to database
-                for (LineItem item : order.getLineItems()) {
-                    item = LineItemController.createLineItem(item, order.getId());
-                    items.add(item);
-                }
-                order.setLineItems(items);
-
-                comnection.commit();
-
-                //Til at tæste min løsning
-                //throw new SQLException();
+            //Til at tæste min løsning
+            //throw new SQLException();
 
         } catch (SQLException e) {
 
-                //udskriver fejlen
-                System.err.println(e.getMessage());
-                if (comnection != null) {
-                    try {
-                        System.err.print("Transaction is being rolled back");
-                        comnection.rollback();
-                    } catch (SQLException excep) {
-                        System.err.println(e.getMessage());
-                    }
-                }
-            } finally{
+            //udskriver fejlen
+            System.err.println(e.getMessage());
+            if (comnection != null) {
                 try {
-                    comnection.setAutoCommit(true);
-                } catch (SQLException e) {
-                    e.printStackTrace();
+                    System.err.print("Transaction is being rolled back");
+                    comnection.rollback();
+                } catch (SQLException excep) {
+                    System.err.println(e.getMessage());
                 }
             }
+        } finally {
+            try {
+                comnection.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
 
         // Return order
         return order;

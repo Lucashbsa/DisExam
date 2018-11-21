@@ -31,7 +31,7 @@ public class ProductEndpoints {
         // TODO: Add Encryption to JSON - FIXED
         // We convert the java object to json with GSON library imported in Maven
         String json = new Gson().toJson(product);
-        //json = Encryption.encryptDecryptXOR(json);
+        json = Encryption.encryptDecryptXOR(json);
 
         // Return a response with status 200 and JSON as type
         return Response.status(200).type(MediaType.TEXT_PLAIN_TYPE).entity(json).build();
@@ -50,7 +50,7 @@ public class ProductEndpoints {
         // TODO: Add Encryption to JSON - FIXED
         // We convert the java object to json with GSON library imported in Maven
         String json = new Gson().toJson(products);
-        //json = Encryption.encryptDecryptXOR(json);
+        json = Encryption.encryptDecryptXOR(json);
 
         // Return a response with status 200 and JSON as type
         return Response.status(200).type(MediaType.TEXT_PLAIN_TYPE).entity(json).build();
@@ -67,8 +67,10 @@ public class ProductEndpoints {
         // Use the controller to add the user
         Product createdProduct = ProductController.createProduct(newProduct);
 
+        // TODO: (Måske Encryption)
         // Get the user back with the added ID and return it to the user
         String json = new Gson().toJson(createdProduct);
+        json = Encryption.encryptDecryptXOR(json);
 
         // Return the data to the user
         if (createdProduct != null) {

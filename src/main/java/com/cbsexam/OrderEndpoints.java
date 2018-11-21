@@ -31,7 +31,7 @@ public class OrderEndpoints {
         // TODO: Add Encryption to JSON - FIXED
         // We convert the java object to json with GSON library imported in Maven
         String json = new Gson().toJson(order);
-        //json = Encryption.encryptDecryptXOR(json);
+        json = Encryption.encryptDecryptXOR(json);
 
         // Return a response with status 200 and JSON as type
         return Response.status(200).type(MediaType.APPLICATION_JSON).entity(json).build();
@@ -50,7 +50,7 @@ public class OrderEndpoints {
         // TODO: Add Encryption to JSON - FIXED
         // We convert the java object to json with GSON library imported in Maven
         String json = new Gson().toJson(orders);
-        //json = Encryption.encryptDecryptXOR(json);
+        json = Encryption.encryptDecryptXOR(json);
 
         // Return a response with status 200 and JSON as type
         return Response.status(200).type(MediaType.TEXT_PLAIN_TYPE).entity(json).build();
@@ -67,8 +67,10 @@ public class OrderEndpoints {
         // Use the controller to add the user
         Order createdOrder = OrderController.createOrder(newOrder);
 
+        // TODO: (Måske Encryption)
         // Get the user back with the added ID and return it to the user
         String json = new Gson().toJson(createdOrder);
+        json = Encryption.encryptDecryptXOR(json);
 
         // Return the data to the user
         if (createdOrder != null) {
@@ -80,5 +82,4 @@ public class OrderEndpoints {
             return Response.status(400).entity("Could not create user").build();
         }
     }
-
 }

@@ -4,6 +4,7 @@ import cache.UserCache;
 import com.google.gson.Gson;
 import controllers.UserController;
 import model.User;
+import utils.Encryption;
 import utils.Log;
 
 import javax.ws.rs.*;
@@ -31,7 +32,7 @@ public class UserEndpoints {
         // TODO: Add Encryption to JSON - FIXED
         // Convert the user object to json in order to return the object
         String json = new Gson().toJson(user);
-        //json = Encryption.encryptDecryptXOR(json);
+        json = Encryption.encryptDecryptXOR(json);
 
         // Return the user with the status code 200
         // TODO: What should happen if something breaks down? - FIXED
@@ -62,7 +63,7 @@ public class UserEndpoints {
         // TODO: Add Encryption to JSON - FIXED
         // Transfer users to json in order to return it to the user
         String json = new Gson().toJson(users);
-        //json = Encryption.encryptDecryptXOR(json);
+        json = Encryption.encryptDecryptXOR(json);
 
 
         if (users != null) {
@@ -86,8 +87,11 @@ public class UserEndpoints {
         // Use the controller to add the user
         User createUser = UserController.createUser(newUser);
 
+
+        // TODO: (Måske Encryption)
         // Get the user back with the added ID and return it to the user
         String json = new Gson().toJson(createUser);
+        json = Encryption.encryptDecryptXOR(json);
 
         // Return the data to the user
         if (createUser != null) {
@@ -121,13 +125,12 @@ public class UserEndpoints {
         }
     }
 
-
     // TODO: Make the system able to delete users. - FIXED
     @DELETE
     @Path("/delete")
     public Response deleteUser(String body) {
-        User user = new Gson().fromJson(body, User.class);
 
+        User user = new Gson().fromJson(body, User.class);
 
         // Return the data to the user
         if (UserController.deleteUser(user.getToken())) {
@@ -140,7 +143,6 @@ public class UserEndpoints {
         }
 
     }
-
 
     // TODO: Make the system able to update users  - FIXED
     @POST
