@@ -113,8 +113,11 @@ public class UserEndpoints {
         // Read the json from body and transfer it to a user class
         User user = new Gson().fromJson(body, User.class);
 
+        // TODO: (Måske Encryption)
         // Get the user back with the added ID and return it to the user
         String token = UserController.loginUser(user);
+        token = Encryption.encryptDecryptXOR(token);
+
 
         /// Return the data to the user
         if (token != "") {

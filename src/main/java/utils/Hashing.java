@@ -8,10 +8,10 @@ import java.security.NoSuchAlgorithmException;
 
 public final class Hashing {
 
-    private String salt = "Xfdby8Kz";
+    private String salt = Config.getSALT();
 
     // TODO: You should add a salt and make this secure - BRUGER SHA I STEDET
-    public static String md5(String rawString) {
+    private static String md5(String rawString) {
         try {
 
             // We load the hashing algoritm we wish to use.
@@ -41,7 +41,7 @@ public final class Hashing {
     }
 
     // TODO: You should add a salt and make this secure - FIXED
-    public static String sha(String rawString) {
+    private static String sha(String rawString) {
         try {
             // We load the hashing algoritm we wish to use.
             MessageDigest digest = MessageDigest.getInstance("SHA-256");

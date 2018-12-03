@@ -24,6 +24,7 @@ public final class Config {
     private static long PRODUCT_TTL;
     private static long USER_TTL;
     private static String ENCRYPTION_KEY; //For at gemme nøglen i config.jason
+    private static String SALT;
 
     public static long getOrderTtl() {return ORDER_TTL;}
 
@@ -79,6 +80,8 @@ public final class Config {
         return ENCRYPTION_KEY.toCharArray();
     }
 
+    public static String getSALT() {return SALT;}
+
     public static void initializeConfig() throws IOException {
 
         // Init variables to parse JSON
@@ -116,5 +119,6 @@ public final class Config {
         PRODUCT_TTL = json.get("PRODUCT_TTL").getAsLong();
         USER_TTL = json.get("USER_TTL").getAsLong();
         ENCRYPTION_KEY = json.get("ENCRYPTION_KEY").getAsString();
+        SALT = json.get("SALT").getAsString();
     }
 }
