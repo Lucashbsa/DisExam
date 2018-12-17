@@ -57,7 +57,7 @@ public class ProductEndpoints {
     }
 
     @POST
-    @Path("/")
+    @Path("/createProduct")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createProduct(String body) {
 
@@ -70,14 +70,18 @@ public class ProductEndpoints {
         // TODO: (Måske Encryption)
         // Get the user back with the added ID and return it to the user
         String json = new Gson().toJson(createdProduct);
-        json = Encryption.encryptDecryptXOR(json);
+        //json = Encryption.encryptDecryptXOR(json);
 
         // Return the data to the user
         if (createdProduct != null) {
+
+            //Opdatere Cache
+            productCache.getProducts(true);
+
             // Return a response with status 200 and JSON as type
             return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
         } else {
-            return Response.status(400).entity("Could not create user").build();
+            return Response.status(400).entity("Could not create product").build();
         }
     }
 

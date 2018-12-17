@@ -56,7 +56,6 @@ public class DatabaseController {
         if (connection == null)
             connection = getConnection();
 
-
         // We set the resultset as empty.
         ResultSet rs = null;
 
@@ -137,7 +136,4 @@ public class DatabaseController {
         }
         return false;
     }
-
-
-
 }

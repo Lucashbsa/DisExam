@@ -144,13 +144,14 @@ public class UserController {
     }
 
     public static String loginUser(User user) {
+        Hashing hashing = new Hashing();
 
         // Check for DB Connection
         if (dbCon == null) {
             dbCon = new DatabaseController();
         }
 
-        String sql = "SELECT * FROM user where email='" + user.getEmail() + "'AND password='" + user.getPassword() + "'";
+        String sql = "SELECT * FROM user where email='" + user.getEmail() + "'AND password='" + hashing.hashWithSalt(user.getPassword()) + "'";
 
         dbCon.insert(sql);
 
@@ -174,14 +175,14 @@ public class UserController {
                     try {
                         Algorithm algorithm = Algorithm.HMAC256("secret");
                         token = JWT.create()
-                                .withClaim("userid", userlogin.getId())
+                                .withClaim("userId", userlogin.getId())
                                 .withIssuer("auth0")
                                 .sign(algorithm);
+                        return(token);
                     } catch (JWTCreationException exception) {
                         //Invalid Signing configuration / Couldn't convert Claims.
                         System.out.println(exception.getMessage());
-                    } finally {
-                        return token;
+                        return "";
                     }
                 }
             } else {
@@ -189,6 +190,7 @@ public class UserController {
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+            return "";
         }
 
         // Return null
@@ -216,6 +218,7 @@ public class UserController {
         String sql = "DELETE FROM user WHERE id = " + jwt.getClaim("userid").asInt();
 
         return dbCon.insert(sql) == 1;
+
     }
 
     public static boolean updateUser(User user, String token) {

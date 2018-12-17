@@ -209,6 +209,7 @@ public class OrderController {
         Connection comnection = dbCon.getConnection();
 
         try {
+
             //Sætter AutoCommit til false så vi selv kan bestemme hvornår vi commiter
             comnection.setAutoCommit(false);
 
@@ -252,6 +253,7 @@ public class OrderController {
             }
             order.setLineItems(items);
 
+            // Mangler kommentar
             comnection.commit();
 
             //Til at tæste min løsning

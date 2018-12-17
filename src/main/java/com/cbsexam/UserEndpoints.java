@@ -91,10 +91,14 @@ public class UserEndpoints {
         // TODO: (Måske Encryption)
         // Get the user back with the added ID and return it to the user
         String json = new Gson().toJson(createUser);
-        json = Encryption.encryptDecryptXOR(json);
+        //json = Encryption.encryptDecryptXOR(json);
 
         // Return the data to the user
         if (createUser != null) {
+
+            //Opdatere Cache
+            userCache.getUsers(true);
+
             // Return a response with status 200 and JSON as type
             return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
         } else {
@@ -116,13 +120,14 @@ public class UserEndpoints {
         // TODO: (Måske Encryption)
         // Get the user back with the added ID and return it to the user
         String token = UserController.loginUser(user);
-        token = Encryption.encryptDecryptXOR(token);
+        //token = Encryption.encryptDecryptXOR(token);
 
 
         /// Return the data to the user
         if (token != "") {
             // Return a response with status 200 and JSON as type
             return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(token).build();
+
         } else {
             return Response.status(400).entity("Wrong Email or Password").build();
         }
