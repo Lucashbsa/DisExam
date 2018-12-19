@@ -144,6 +144,9 @@ public class UserEndpoints {
         // Return the data to the user
         if (UserController.deleteUser(user, user.getToken())) {
 
+            //Opdatere Cache
+            userCache.getUsers(true);
+
             // Return a response with status 200 and JSON as type
             return Response.status(200).entity("Bruger er slettet fra systemet").build();
         } else {
