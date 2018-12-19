@@ -1,6 +1,7 @@
 package com.cbsexam;
 
 import cache.UserCache;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.Gson;
 import controllers.UserController;
 import model.User;
@@ -141,7 +142,7 @@ public class UserEndpoints {
         User user = new Gson().fromJson(body, User.class);
 
         // Return the data to the user
-        if (UserController.deleteUser(user.getToken())) {
+        if (UserController.deleteUser(user, user.getToken())) {
 
             // Return a response with status 200 and JSON as type
             return Response.status(200).entity("Bruger er slettet fra systemet").build();
@@ -160,8 +161,10 @@ public class UserEndpoints {
 
         User user = new Gson().fromJson(body, User.class);
 
+        Boolean update = UserController.updateUser(user, user.getToken());
+
         // Return the data to the user
-        if (UserController.updateUser(user, user.getToken())) {
+        if (update) {
 
             //Opdatere Cache
             userCache.getUsers(true);

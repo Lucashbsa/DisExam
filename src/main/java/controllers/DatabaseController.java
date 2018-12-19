@@ -1,6 +1,7 @@
 package controllers;
 
 import utils.Config;
+import utils.Log;
 
 import java.sql.*;
 
@@ -120,20 +121,27 @@ public class DatabaseController {
         }
     }
 
-    public boolean deleteUser(String sql) {
+    public boolean deleteOrUpdateUser(String sql) {
 
         if (connection == null)
             connection = getConnection();
 
+
+        Log.writeLog(UserController.class.getName(), null, sql, 0);
         try {
-            PreparedStatement statement =
-                    connection.prepareStatement(sql);
-            statement.executeUpdate();
-            return true;
+            PreparedStatement deleteOrUpdate = connection.prepareStatement(sql);
+            deleteOrUpdate.executeUpdate();
+
+            int rowsAffected = deleteOrUpdate.executeUpdate();
+
+            if(rowsAffected == 1){
+                return true;
+            }
 
         } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+           ex.printStackTrace();
         }
         return false;
     }
+
 }

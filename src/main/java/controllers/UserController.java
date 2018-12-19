@@ -178,11 +178,12 @@ public class UserController {
                                 .withClaim("userId", userlogin.getId())
                                 .withIssuer("auth0")
                                 .sign(algorithm);
-                        return(token);
+
                     } catch (JWTCreationException exception) {
                         //Invalid Signing configuration / Couldn't convert Claims.
                         System.out.println(exception.getMessage());
-                        return "";
+                    } finally {
+                        return token;
                     }
                 }
             } else {
@@ -190,38 +191,36 @@ public class UserController {
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
-            return "";
         }
 
         // Return null
         return "";
     }
 
-    public static boolean deleteUser(String token) {
+    public static boolean deleteUser(User user, String token) {
 
         if (dbCon == null) {
             dbCon = new DatabaseController();
         }
 
-        DecodedJWT jwt = null;
-
         try {
-            Algorithm algorithm = Algorithm.HMAC256("secret");
-            JWTVerifier verifier = JWT.require(algorithm)
-                    .withIssuer("auth0")
-                    .build();  //reusable verifier indstance
-            jwt = verifier.verify(token);
+            DecodedJWT jwt =JWT.decode(token);
+            int id = jwt.getClaim("userId").asInt();
         } catch (JWTVerificationException exception) {
             //Invalid signature/claims
         }
 
-        String sql = "DELETE FROM user WHERE id = " + jwt.getClaim("userid").asInt();
+        if (user != null) {
 
-        return dbCon.insert(sql) == 1;
-
+            dbCon.deleteOrUpdateUser("DELETE FROM user WHERE id = " + user.getId());
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public static boolean updateUser(User user, String token) {
+        Log.writeLog(UserController.class.getName(), user, "Updating user" + " " + user.getFirstname(), 0);
 
         Hashing hashing = new Hashing();
 
@@ -230,22 +229,21 @@ public class UserController {
             dbCon = new DatabaseController();
         }
 
-        DecodedJWT jwt = null;
         try {
-            Algorithm algorithm = Algorithm.HMAC256("secret");
-            JWTVerifier verifier = JWT.require(algorithm)
-                    .withIssuer("auth0")
-                    .build(); //Reusable verifier instance
-            jwt = verifier.verify(token);
+            DecodedJWT jwt =JWT.decode(token);
+            int id = jwt.getClaim("userId").asInt();
         } catch (JWTVerificationException exception) {
             //Invalid signature/claims
         }
 
-        String sql =
-                "UPDATE user SET first_name = '" + user.getFirstname() + "', last_name ='" + user.getLastname()
-                        + "', password = '" + hashing.hashWithSalt(user.getPassword()) + "', email ='" + user.getEmail()
-                        + "' WHERE id = " + jwt.getClaim("userid").asInt();
-
-        return dbCon.insert(sql) == 1;
+        if (user != null) {
+            dbCon.deleteOrUpdateUser("UPDATE user SET first_name ='" + user.getFirstname() + "', last_name ='" + user.getLastname()
+                    + "', password = '" + hashing.hashWithSalt(user.getPassword()) + "', email ='" + user.getEmail()
+                    + "' WHERE id =" + user.getId());
+            return true;
+        } else {
+            return false;
+        }
     }
 }
+
