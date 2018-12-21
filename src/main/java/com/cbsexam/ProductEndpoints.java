@@ -67,10 +67,10 @@ public class ProductEndpoints {
         // Use the controller to add the user
         Product createdProduct = ProductController.createProduct(newProduct);
 
-        // TODO: (Måske Encryption)
+        //added Encryption
         // Get the user back with the added ID and return it to the user
         String json = new Gson().toJson(createdProduct);
-        //json = Encryption.encryptDecryptXOR(json);
+        json = Encryption.encryptDecryptXOR(json);
 
         // Return the data to the user
         if (createdProduct != null) {

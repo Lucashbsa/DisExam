@@ -89,7 +89,7 @@ public class UserEndpoints {
         User createUser = UserController.createUser(newUser);
 
 
-        // TODO: (Måske Encryption)
+        //added Encryption
         // Get the user back with the added ID and return it to the user
         String json = new Gson().toJson(createUser);
         json = Encryption.encryptDecryptXOR(json);
@@ -118,7 +118,7 @@ public class UserEndpoints {
         // Read the json from body and transfer it to a user class
         User user = new Gson().fromJson(body, User.class);
 
-        // TODO: (Måske Encryption)
+        //added Encryption
         // Get the user back with the added ID and return it to the user
         String token = UserController.loginUser(user);
         token = Encryption.encryptDecryptXOR(token);

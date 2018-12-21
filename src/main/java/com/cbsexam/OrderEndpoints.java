@@ -67,10 +67,10 @@ public class OrderEndpoints {
         // Use the controller to add the user
         Order createdOrder = OrderController.createOrder(newOrder);
 
-        // TODO: (Måske Encryption)
+
         // Get the user back with the added ID and return it to the user
         String json = new Gson().toJson(createdOrder);
-        //json = Encryption.encryptDecryptXOR(json);
+        json = Encryption.encryptDecryptXOR(json);
 
         // Return the data to the user
         if (createdOrder != null) {
