@@ -107,19 +107,6 @@ public class DatabaseController {
         return result;
     }
 
-    public void loginUser(String sql) {
-        if (connection == null)
-            connection = getConnection();
-
-        try {
-            PreparedStatement statement =
-                    connection.prepareStatement(sql);
-            statement.executeUpdate();
-
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-        }
-    }
 
     public boolean deleteOrUpdateUser(String sql) {
 
@@ -127,13 +114,14 @@ public class DatabaseController {
             connection = getConnection();
 
 
-        Log.writeLog(UserController.class.getName(), null, sql, 0);
         try {
+            // Execute query
             PreparedStatement deleteOrUpdate = connection.prepareStatement(sql);
             deleteOrUpdate.executeUpdate();
 
             int rowsAffected = deleteOrUpdate.executeUpdate();
 
+            // Return the resultset which at this point will be 1
             if(rowsAffected == 1){
                 return true;
             }
@@ -141,6 +129,7 @@ public class DatabaseController {
         } catch (SQLException ex) {
            ex.printStackTrace();
         }
+        // Return the resultset which at this point will be null
         return false;
     }
 

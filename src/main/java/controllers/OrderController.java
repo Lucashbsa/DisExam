@@ -47,7 +47,6 @@ public class OrderController {
         try {
             if (rs.next()) {
 
-                // Perhaps we could optimize things a bit here and get rid of nested queries.
 
                 ArrayList<LineItem> lineItems = LineItemController.getLineItemsForOrder(rs.getInt("id"));
 
@@ -132,11 +131,6 @@ public class OrderController {
 
         try {
             while (rs.next()) {
-
-                // Perhaps we could optimize things a bit here and get rid of nested queries.
-                //User user = UserController.getUser(rs.getInt("user_id"));
-                //Address billingAddress = AddressController.getAddress(rs.getInt("billing_address_id"));
-                //Address shippingAddress = AddressController.getAddress(rs.getInt("shipping_address_id"));
 
                 ArrayList<LineItem> lineItems = LineItemController.getLineItemsForOrder(rs.getInt("id"));
 
@@ -253,11 +247,9 @@ public class OrderController {
             }
             order.setLineItems(items);
 
-            // Mangler kommentar
+
             comnection.commit();
 
-            //Til at tæste min løsning
-            //throw new SQLException();
 
         } catch (SQLException e) {
 

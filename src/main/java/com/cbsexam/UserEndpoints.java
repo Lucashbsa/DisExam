@@ -92,7 +92,7 @@ public class UserEndpoints {
         // TODO: (Måske Encryption)
         // Get the user back with the added ID and return it to the user
         String json = new Gson().toJson(createUser);
-        //json = Encryption.encryptDecryptXOR(json);
+        json = Encryption.encryptDecryptXOR(json);
 
         // Return the data to the user
         if (createUser != null) {
@@ -121,7 +121,7 @@ public class UserEndpoints {
         // TODO: (Måske Encryption)
         // Get the user back with the added ID and return it to the user
         String token = UserController.loginUser(user);
-        //token = Encryption.encryptDecryptXOR(token);
+        token = Encryption.encryptDecryptXOR(token);
 
 
         /// Return the data to the user
@@ -162,8 +162,10 @@ public class UserEndpoints {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateUser(String body) {
 
+        // Read the json from body and transfer it to a user class
         User user = new Gson().fromJson(body, User.class);
 
+        //hvis det lykkse databasen at updatere usereren og verificere token retunere true
         Boolean update = UserController.updateUser(user, user.getToken());
 
         // Return the data to the user
